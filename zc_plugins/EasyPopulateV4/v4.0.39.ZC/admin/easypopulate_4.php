@@ -1,6 +1,6 @@
 <?php
 // $Id: easypopulate_4.php, v4.0.37 02-08-2017 mc12345678 $
-
+// // $Id: easypopulate_4.php, v4.0.39.ZC.a 2024-12-11 OldNGrey(BMH) mc12345678 $
 /**
  * Table prefixes, as needed in queries are as follows:
  *   TABLE_CATEGORIES                                     c
@@ -16,6 +16,10 @@
  *   TABLE_PRODUCTS_WITH_ATTRIBUTES_STOCK                 pwas
  *
  **/
+// BMH 2024-12-10
+//                  ln585 PHP8.4 fgetcsv
+//                  ln197 $curver_date
+//
 
 // START INITIALIZATION
 require_once ('includes/application_top.php');
@@ -82,7 +86,7 @@ if (!function_exists('zen_define_default')) {
     define('EASYPOPULATE_4_CONFIG_IMPORT_OVERRIDE', 'language_id');
   }
 } else {
-  
+
   // Need to define this to support use of primary key for import/export
   //   Instead of adding an additional switch, have incorporated the conversion
   //   of a blank product_id field to a new product in here.  Currently
@@ -173,7 +177,7 @@ $last['statusSel'] = !empty($_POST['ep_status_filter']) ? $_POST['ep_status_filt
 /* Test area end */
 
 /* populate the variable $curver_detail using independent file to identify the version of this plugin. */
-require DIR_WS_MODULES . 'easypopulate_4_version.php'; //$curver_detail = '4.0.37.6';
+require DIR_WS_MODULES . 'easypopulate_4_version.php'; //$curver_detail = '4.0.39.Zc.a';
 $message = '';
 if (IS_ADMIN_FLAG && (function_exists('plugin_version_check_for_updates') || class_exists('queryFactoryEP4') && method_exists('plugin_version_check_for_updates', 'queryFactoryEP4')) && (!defined('SHOW_VERSION_UPDATE_IN_HEADER') || SHOW_VERSION_UPDATE_IN_HEADER === 'true') && (!defined('EASYPOPULATE_4_PLUGIN_CHECK') || EASYPOPULATE_4_PLUGIN_CHECK === '1')) {
   // minimize number of tries to retrieve the plugin version.
@@ -190,11 +194,13 @@ if (IS_ADMIN_FLAG && (function_exists('plugin_version_check_for_updates') || cla
 }
 
 // Current EP Version - Modded by mc12345678 after Chadd had done so much
-$curver              = $curver_detail . ' - 06-17-2024' . $message;
+// BMH $curver              = $curver_detail . ' - 06-17-2024' . $message;
+$curver  = $curver_detail . ' ' .$curver_date . ' ' . $message; // BMH
 $display_output = ''; // results of import displayed after script run
 $ep_dltype = NULL;
 $ep_stack_sql_error = false; // function returns true on any 1 error, and notifies user of an error
-$specials_print = EASYPOPULATE_4_SPECIALS_HEADING;
+if (!defined('EASYPOPULATE_4_SPECIALS_HEADING')) define('EASYPOPULATE_4_SPECIALS_HEADING', '');
+$specials_print = EASYPOPULATE_4_SPECIALS_HEADING ?? '';        //BMH undefined constant
 $has_specials = false;
 
 $filename = 'easypopulate_4_menus.php';
@@ -506,7 +512,7 @@ $langcode = ep_4_get_languages(); // array of currently used language codes ( 1,
 
 function getDBDelimiterList() {
   global $db;
-  
+
   $sql = "SELECT set_function FROM " . TABLE_CONFIGURATION . " where configuration_key = 'EASYPOPULATE_4_CONFIG_CSV_DELIMITER'";
   $set_function = $db->Execute($sql, 1);
 
@@ -578,7 +584,8 @@ function getFileDelimiter($file, $checkLines = 2) {
     $file->rewind();
 
     while($file->valid() && $i < $checkLines) {
-      $line[$delimiter][$i] = $file->fgetcsv($delimiter); // obtain fields based on attempted delimiter.
+      // BMH $line[$delimiter][$i] = $file->fgetcsv($delimiter); // obtain fields based on attempted delimiter.
+       $line[$delimiter][$i] = $file->fgetcsv(0,$delimiter,""); //BMH PHP8.4    // obtain fields based on attempted delimiter.
       if (count($line[$delimiter][$i]) <= 1) { // There are at least two fields which would be needed to perform any work.
         $i++;
         continue;
@@ -600,7 +607,7 @@ function getFileDelimiter($file, $checkLines = 2) {
   }
 
   $size_results = count($results); // Identifies the number of delimiters that were potentially obtained.
-  
+
   if ($size_results == 1) {
     // found the one delimiter that works
     $results = array_keys($results, max($results));
@@ -645,7 +652,7 @@ function getFileDelimiter($file, $checkLines = 2) {
     }
   }
 
-  return $returndelimiters; // Will return an array, but question is if it is empty or has 1 or more values.   
+  return $returndelimiters; // Will return an array, but question is if it is empty or has 1 or more values.
 }
 
 function ep_4_display_CSV_Delimiter($filename) {
@@ -739,7 +746,7 @@ if ((!isset($error) || !$error) && (isset($_POST["delete"])) && !is_null($_SERVE
 }
 ?>
 
-<!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!doctype html">
 <html <?php echo HTML_PARAMS; ?>>
   <head>
 <?php if (is_file(DIR_WS_INCLUDES . 'admin_html_head.php')) {

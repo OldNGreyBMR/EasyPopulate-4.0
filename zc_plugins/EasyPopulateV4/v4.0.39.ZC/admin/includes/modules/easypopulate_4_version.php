@@ -6,6 +6,6 @@
  * @ author mc12345678
  * @ New file added 2019-01-10 by mc12345678: https://mc12345678.com
  */
- 
- $curver_detail = '4.0.39.ZC';
- 
+// BMH 2024-12-11 version update
+ $curver_detail = '4.0.39.ZC.a';
+

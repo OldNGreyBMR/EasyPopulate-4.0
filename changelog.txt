@@ -565,4 +565,8 @@
                                 - Add AJAX driven markings in dropdown lists based on product and attribute presence.
                                 - Add language define constants replacing hard-coded text.
                                 - Add error checking notifications to assist understanding cause(s) of issue.
+4.0.39.ZC.a                     - format language file is  "\zc_plugins\EasyPopulateV4\v4.0.39.ZC\admin\includes\languages\english\easypopulate_4.php" as lang.easypopulate_4.php
+                                - update fgetcsv in zc_plugins\EasyPopulateV4\v4.0.39.ZC\admin\easypopulate_4.php ln585 for PHP 8.x
+
+
                                 
